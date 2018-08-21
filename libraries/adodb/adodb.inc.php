@@ -234,7 +234,7 @@
 	
 		var $createdir = true; // requires creation of temp dirs
 		
-		function ADODB_Cache_File()
+		function __construct()
 		{
 		global $ADODB_INCLUDED_CSV;
 			if (empty($ADODB_INCLUDED_CSV)) include_once(ADODB_DIR.'/adodb-csvlib.inc.php');
@@ -427,7 +427,7 @@
 	/**
 	 * Constructor
 	 */
-	function ADOConnection()			
+	function __construct()			
 	{
 		die('Virtual Class -- cannot instantiate');
 	}
@@ -958,25 +958,26 @@
 			unset($element0);
 			
 			if (!is_array($sql) && !$this->_bindInputArray) {
-				$sqlarr = explode('?',$sql);
-				$nparams = sizeof($sqlarr)-1;
-				if (!$array_2d) $inputarr = array($inputarr);
-				foreach($inputarr as $arr) {
-					$sql = ''; $i = 0;
-					//Use each() instead of foreach to reduce memory usage -mikefedyk
-					while(list(, $v) = each($arr)) {
-						$sql .= $sqlarr[$i];
-						// from Ron Baldwin <ron.baldwin#sourceprose.com>
-						// Only quote string types	
-						$typ = gettype($v);
-						if ($typ == 'string')
-							//New memory copy of input created here -mikefedyk
-							$sql .= $this->qstr($v);
-						else if ($typ == 'double')
-							$sql .= str_replace(',','.',$v); // locales fix so 1.1 does not get converted to 1,1
-						else if ($typ == 'boolean')
-							$sql .= $v ? $this->true : $this->false;
-						else if ($typ == 'object') {
+			    $sqlarr = explode('?',$sql);
+			    $nparams = sizeof($sqlarr)-1;
+			    if (!$array_2d) $inputarr = array($inputarr);
+			    foreach($inputarr as $arr) {
+				$sql = ''; $i = 0;
+				//Use each() instead of foreach to reduce memory usage -mikefedyk
+				foreach($arr as $v) {
+				//while(list(, $v) = each($arr)) {
+				    $sql .= $sqlarr[$i];
+				    // from Ron Baldwin <ron.baldwin#sourceprose.com>
+				    // Only quote string types	
+				    $typ = gettype($v);
+				    if ($typ == 'string')
+					//New memory copy of input created here -mikefedyk
+					$sql .= $this->qstr($v);
+				    else if ($typ == 'double')
+				    $sql .= str_replace(',','.',$v); // locales fix so 1.1 does not get converted to 1,1
+				    else if ($typ == 'boolean')
+				    $sql .= $v ? $this->true : $this->false;
+				    else if ($typ == 'object') {
 							if (method_exists($v, '__toString')) $sql .= $this->qstr($v->__toString());
 							else $sql .= $this->qstr((string) $v);
 						} else if ($v === null)
@@ -2896,7 +2897,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 	 * @param queryID  	this is the queryID returned by ADOConnection->_query()
 	 *
 	 */
-	function ADORecordSet($queryID) 
+	function __construct($queryID) 
 	{
 		$this->_queryID = $queryID;
 	}
@@ -3887,13 +3888,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		 * Constructor
 		 *
 		 */
-		function ADORecordSet_array($fakeid=1)
+		function __construct($fakeid=1)
 		{
 		global $ADODB_FETCH_MODE,$ADODB_COMPAT_FETCH;
 		
 			// fetch() on EOF does not delete $this->fields
 			$this->compat = !empty($ADODB_COMPAT_FETCH);
-			$this->ADORecordSet($fakeid); // fake queryID		
+			parent::__construct($fakeid); // fake queryID		
 			$this->fetchMode = $ADODB_FETCH_MODE;
 		}
 		

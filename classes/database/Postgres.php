@@ -11,7 +11,7 @@ include_once('./classes/database/ADODB_base.php');
 
 class Postgres extends ADODB_base {
 
-	var $major_version = 9.5;
+	var $major_version = 10;
 	// Max object name length
 	var $_maxNameLen = 63;
 	// Store the current schema
@@ -169,8 +169,8 @@ class Postgres extends ADODB_base {
 	 * Constructor
 	 * @param $conn The database connection
 	 */
-	function Postgres($conn) {
-		$this->ADODB_base($conn);
+	function __construct($conn) {
+		parent::__construct($conn);
 	}
 
 	// Formatting functions
@@ -476,7 +476,7 @@ class Postgres extends ADODB_base {
 				END as dbsize, pdb.datcollate, pdb.datctype
 			FROM pg_catalog.pg_database pdb
 				LEFT JOIN pg_catalog.pg_roles pr ON (pdb.datdba = pr.oid)
-			WHERE true
+			WHERE pg_catalog.has_database_privilege(current_user, pdb.oid, 'CONNECT')
 				{$where}
 				{$clause}
 			{$orderby}";
